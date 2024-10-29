@@ -2,7 +2,6 @@
 
 namespace Database\Factories;
 
-use Awobaz\Compoships\Database\Eloquent\Factories\ComposhipsFactory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -10,8 +9,6 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class ReplyFactory extends Factory
 {
-    use ComposhipsFactory;
-
     /**
      * Define the model's default state.
      *
