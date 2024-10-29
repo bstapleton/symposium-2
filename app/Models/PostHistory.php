@@ -3,8 +3,6 @@
 namespace App\Models;
 
 use App\Traits\HasSqid;
-use App\Utility\Sqid;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
@@ -18,6 +16,10 @@ class PostHistory extends History
 
     protected $fillable = [
         'post_id',
+        'parent_id',
+        'created_at',
+        'title',
+        'text',
     ];
 
     public function historyable()
