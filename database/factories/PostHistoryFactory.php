@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\PostHistory;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -21,5 +22,15 @@ class PostHistoryFactory extends Factory
             'text' => $this->faker->paragraph(),
             'created_at' => now(),
         ];
+    }
+
+    public function withParent(int $postId): Factory|PostHistoryFactory
+    {
+        return $this->state(function (array $attributes) use ($postId) {
+            $parent = PostHistory::factory()->create(['post_id' => $postId]);
+            return [
+                'parent_id' => $parent->id,
+            ];
+        });
     }
 }
