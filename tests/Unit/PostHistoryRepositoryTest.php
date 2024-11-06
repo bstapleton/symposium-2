@@ -80,4 +80,18 @@ class PostHistoryRepositoryTest extends TestCase
         // Assert that we have a new post history
         $this->assertCount(1, PostHistory::all());
     }
+
+    /**
+     * @test
+     */
+    public function post_histories_can_have_parent_post_histories()
+    {
+        $postHistory = PostHistory::factory()->withParent($this->post->id)->create([
+            'post_id' => $this->post->id
+        ]);
+
+        $this->assertNotNull($postHistory->parent);
+        $this->assertInstanceOf(PostHistory::class, $postHistory->parent);
+        $this->assertEquals($postHistory->parent_id, $postHistory->parent->id);
+    }
 }
