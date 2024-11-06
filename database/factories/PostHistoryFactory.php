@@ -24,6 +24,12 @@ class PostHistoryFactory extends Factory
         ];
     }
 
+    /**
+     * Create a revision of a post's old content
+     *
+     * @param int $postId
+     * @return Factory|PostHistoryFactory
+     */
     public function withParent(int $postId): Factory|PostHistoryFactory
     {
         return $this->state(function (array $attributes) use ($postId) {

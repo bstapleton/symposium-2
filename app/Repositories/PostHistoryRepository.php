@@ -23,13 +23,8 @@ class PostHistoryRepository implements IHistoryRepository
         return PostHistory::create($data);
     }
 
-    public function update(array $data, int $id)
+    public function destroy(int $id): int
     {
-        // TODO: Implement update() method.
-    }
-
-    public function destroy(int $id)
-    {
-        // TODO: Implement destroy() method.
+        return PostHistory::destroy($id);
     }
 }
