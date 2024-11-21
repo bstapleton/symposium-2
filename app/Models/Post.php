@@ -30,9 +30,4 @@ class Post extends Model
     {
         return $this->hasMany(PostHistory::class);
     }
-
-    protected function replies(): HasMany
-    {
-        return $this->hasMany(Reply::class);
-    }
 }

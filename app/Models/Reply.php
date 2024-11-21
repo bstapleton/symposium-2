@@ -6,25 +6,29 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOneThrough;
 
 /**
  * @property integer id
- * @property integer post_id
+ * @property integer post_history_id
+ * @property integer status
+ * @property string title
+ * @property string text
+ * @property string created_at
+ * @property string updated_at
  */
 class Reply extends Model
 {
     use HasFactory;
-
-    public $timestamps = false;
 
     protected function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    protected function post(): BelongsTo
+    protected function postHistory(): BelongsTo
     {
-        return $this->belongsTo(Post::class);
+        return $this->belongsTo(PostHistory::class);
     }
 
     protected function parent(): BelongsTo
@@ -37,8 +41,8 @@ class Reply extends Model
         return $this->hasMany(self::class);
     }
 
-    protected function histories(): HasMany
+    protected function post(): HasOneThrough
     {
-        return $this->hasMany(ReplyHistory::class);
+        return $this->hasOneThrough(Post::class, PostHistory::class);
     }
 }

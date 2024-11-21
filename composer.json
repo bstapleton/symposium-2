@@ -9,7 +9,8 @@
         "laravel/framework": "^11.9",
         "laravel/jetstream": "^5.3",
         "laravel/tinker": "^2.9",
-        "sqids/sqids": "^0.4.1"
+        "red-explosion/laravel-sqids": "^1.2",
+        "sebastian/diff": "^6.0"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

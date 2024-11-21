@@ -2,17 +2,18 @@
 
 namespace App\Models;
 
-use App\Traits\HasSqid;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOneThrough;
+use RedExplosion\Sqids\Concerns\HasSqids;
 
 /**
  * @property integer post_id
  */
 class PostHistory extends History
 {
-    use HasFactory, HasSqid;
+    use HasFactory, HasSqids;
 
     protected $fillable = [
         'post_id',
@@ -40,5 +41,10 @@ class PostHistory extends History
     protected function user(): HasOneThrough
     {
         return $this->hasOneThrough(User::class, Post::class);
+    }
+
+    protected function replies(): HasMany
+    {
+        return $this->hasMany(Reply::class);
     }
 }
