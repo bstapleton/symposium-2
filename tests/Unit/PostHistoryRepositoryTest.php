@@ -112,6 +112,44 @@ class PostHistoryRepositoryTest extends TestCase
     }
 
     #[Test]
+    public function it_can_retrieve_the_older_post_histories()
+    {
+        // Create some post histories
+        PostHistory::factory(3)->create([
+            'post_id' => $this->post->id
+        ]);
+
+        // Create a newer one too
+        $new = PostHistory::factory()->create([
+            'post_id' => $this->post->id
+        ]);
+
+        $older = $this->repository->older($new->id);
+
+        $this->assertNotCount(0, $older);
+        $this->assertNotContains($new->id, $older->pluck('id')->toArray());
+    }
+
+    #[Test]
+    public function it_can_retrieve_the_newer_post_histories()
+    {
+        // Create a post history
+        $old = PostHistory::factory()->create([
+            'post_id' => $this->post->id
+        ]);
+
+        // Create some newer ones
+        PostHistory::factory(3)->create([
+            'post_id' => $this->post->id
+        ]);
+
+        $newer = $this->repository->newer($old->id);
+
+        $this->assertNotCount(0, $newer);
+        $this->assertNotContains($old->id, $newer->pluck('id')->toArray());
+    }
+
+    #[Test]
     public function it_can_retrieve_the_previous_post_history()
     {
         // Create a post history
