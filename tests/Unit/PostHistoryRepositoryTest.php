@@ -110,4 +110,44 @@ class PostHistoryRepositoryTest extends TestCase
         // Assert that the post history was destroyed
         $this->assertNull(PostHistory::find($postHistory->id));
     }
+
+    #[Test]
+    public function it_can_retrieve_the_previous_post_history()
+    {
+        // Create a post history
+        $old = PostHistory::factory()->create([
+            'post_id' => $this->post->id
+        ]);
+
+        // Create a newer one too
+        $new = PostHistory::factory()->create([
+            'post_id' => $this->post->id
+        ]);
+
+        $previous = $this->repository->previous($new->id);
+
+        $this->assertNotEquals($previous->id, $new->id);
+        $this->assertEquals($old->id, $previous->id);
+        $this->assertLessThan($new->id, $previous->id);
+    }
+
+    #[Test]
+    public function it_can_retrieve_the_next_post_history()
+    {
+        // Create a post history
+        $old = PostHistory::factory()->create([
+            'post_id' => $this->post->id
+        ]);
+
+        // Create a newer one too
+        $new = PostHistory::factory()->create([
+            'post_id' => $this->post->id
+        ]);
+
+        $next = $this->repository->next($old->id);
+
+        $this->assertNotEquals($next->id, $old->id);
+        $this->assertEquals($new->id, $next->id);
+        $this->assertGreaterThan($old->id, $next->id);
+    }
 }

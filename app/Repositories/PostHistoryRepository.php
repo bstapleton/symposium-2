@@ -27,4 +27,14 @@ class PostHistoryRepository implements IHistoryRepository
     {
         return PostHistory::destroy($id);
     }
+
+    public function previous(int $id)
+    {
+        return PostHistory::where('id', '<', $this->show($id)->id)->orderBy('id', 'desc')->first();
+    }
+
+    public function next(int $id)
+    {
+        return PostHistory::where('id', '>', $this->show($id)->id)->orderBy('id', 'asc')->first();
+    }
 }
