@@ -12,6 +12,11 @@ class PostHistoryRepository implements IHistoryRepository
         return PostHistory::all();
     }
 
+    public function latest(int $postId)
+    {
+        return PostHistory::where('post_id', $postId)->orderBy('id', 'desc')->first();
+    }
+
     public function show(int $id)
     {
         return PostHistory::find($id);
@@ -30,21 +35,30 @@ class PostHistoryRepository implements IHistoryRepository
 
     public function older(int $id)
     {
-        return PostHistory::where('id', '<', $this->show($id)->id)->orderBy('id', 'desc')->get();
+        return PostHistory::where('id', '<', $id)->orderBy('id', 'desc')->get();
     }
 
     public function newer(int $id)
     {
-        return PostHistory::where('id', '>', $this->show($id)->id)->orderBy('id', 'asc')->get();
+        return PostHistory::where('id', '>', $id)->orderBy('id', 'asc')->get();
+    }
+
+    public function first(int $id)
+    {
+        if ($this->older($id)->count() === 0) {
+            return null;
+        }
+
+        return $this->older($id)->reverse()->first();
     }
 
     public function previous(int $id)
     {
-        return PostHistory::where('id', '<', $this->show($id)->id)->orderBy('id', 'desc')->first();
+        return PostHistory::where('id', '<', $id)->orderBy('id', 'desc')->first();
     }
 
     public function next(int $id)
     {
-        return PostHistory::where('id', '>', $this->show($id)->id)->orderBy('id', 'asc')->first();
+        return PostHistory::where('id', '>', $id)->orderBy('id', 'asc')->first();
     }
 }

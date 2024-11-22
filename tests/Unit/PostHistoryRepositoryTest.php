@@ -150,6 +150,41 @@ class PostHistoryRepositoryTest extends TestCase
     }
 
     #[Test]
+    public function it_can_retrieve_the_first_post_history()
+    {
+        // Create a post history
+        $old = PostHistory::factory()->create([
+            'post_id' => $this->post->id
+        ]);
+
+        // Create some newer ones
+        PostHistory::factory(3)->create([
+            'post_id' => $this->post->id
+        ]);
+
+        $new = PostHistory::factory()->create([
+            'post_id' => $this->post->id
+        ]);
+
+        $first = $this->repository->first($new->id);
+
+        $this->assertTrue($first->id === $old->id);
+    }
+
+    #[Test]
+    public function it_returns_null_if_this_is_the_oldest_revision()
+    {
+        // Create a post history
+        $old = PostHistory::factory()->create([
+            'post_id' => $this->post->id
+        ]);
+
+        $first = $this->repository->first($old->id);
+
+        $this->assertNull($first);
+    }
+
+    #[Test]
     public function it_can_retrieve_the_previous_post_history()
     {
         // Create a post history
