@@ -22,6 +22,10 @@ class Post extends Model
 
     public $timestamps = false;
 
+    protected $dispatchesEvents = [
+        'creating' => PostCreating::class,
+    ];
+
     protected function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
