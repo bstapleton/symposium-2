@@ -2,20 +2,18 @@
 
 namespace App\Rules;
 
-use Illuminate\Contracts\Validation\Rule;
+use Closure;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Arr;
 
-class TitleOrText implements Rule
+class TitleOrText implements ValidationRule
 {
-    public function passes($attribute, $value)
+    public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         $data = Arr::get(request()->all(), $attribute);
 
-        return !empty($data['title']) || !empty($data['text']);
-    }
-
-    public function message()
-    {
-        return 'Either title or text must be provided.';
+        if (empty($data['title']) && empty($data['text'])) {
+            $fail('Either title or text must be provided.');
+        }
     }
 }
