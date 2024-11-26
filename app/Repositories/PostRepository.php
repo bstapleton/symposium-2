@@ -15,30 +15,30 @@ class PostRepository implements IEloquentRepository
     {
         $post = Post::where('slug', $slug)->firstOrFail();
         // TODO: calls to the history repository should be handled in the service layer following the creation of the post
-        $postHistoryRepository = new PostHistoryRepository();
+        $postHistoryRepository = new PostRevisionRepository();
         $postRevision = $postHistoryRepository->latest($post->id);
-        $post->created_at = $postHistoryRepository->first($postRevision->id)
-            ? $postHistoryRepository->first($postRevision->id)->created_at
-            : $postRevision->created_at;
-        $post->updated_at = $postRevision->created_at;
-        $post->title = $postRevision->title;
-        $post->text = $postRevision->text;
-        $post->previous = $postHistoryRepository->previous($postRevision->id);
-        $post->next = $postHistoryRepository->next($postRevision->id);
+
+        if ($postRevision) {
+            $post->created_at = $postHistoryRepository->first($postRevision->id)
+                ? $postHistoryRepository->first($postRevision->id)->created_at
+                : $postRevision->created_at;
+            $post->updated_at = $postRevision->created_at;
+            $post->title = $postRevision->title;
+            $post->text = $postRevision->text;
+            $post->previous = $postHistoryRepository->previous($postRevision->id);
+            $post->next = $postHistoryRepository->next($postRevision->id);
+        } else {
+            $post->previous = null;
+            $post->next = null;
+            $post->updated_at = $post->created_at;
+        }
 
         return $post;
     }
 
     public function store(array $data)
     {
-        // TODO: handle slug creation from the title
         $post = Post::create($data);
-        $postHistoryRepository = new PostHistoryRepository();
-        $postHistoryRepository->store([
-            'post_id' => $post->id,
-            'title' => $data['title'],
-            'text' => $data['text']
-        ]);
 
         return $post;
     }

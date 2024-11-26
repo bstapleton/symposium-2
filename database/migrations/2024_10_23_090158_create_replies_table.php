@@ -14,13 +14,14 @@ return new class extends Migration
         Schema::create('replies', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->unsignedBigInteger('parent_id')->nullable();
+            $table->unsignedBigInteger('replyable_id');
+            $table->string('replyable_type');
             $table->text('title');
             $table->longText('text');
             $table->tinyInteger('status')->default(0);
             $table->timestamps();
 
             $table->foreignId('user_id')->constrained('users');
-            $table->foreignId('post_history_id')->constrained('post_histories');
         });
     }
 

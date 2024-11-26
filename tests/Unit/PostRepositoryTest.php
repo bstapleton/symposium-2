@@ -3,7 +3,7 @@
 namespace Tests\Unit;
 
 use App\Models\Post;
-use App\Models\PostHistory;
+use App\Models\PostRevision;
 use App\Models\User;
 use App\Repositories\PostRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -14,7 +14,7 @@ use Tests\TestCase;
 #[CoversClass(PostRepository::class)]
 #[UsesClass(User::class)]
 #[UsesClass(Post::class)]
-#[UsesClass(PostHistory::class)]
+#[UsesClass(PostRevision::class)]
 class PostRepositoryTest extends TestCase
 {
     use RefreshDatabase;
@@ -52,7 +52,7 @@ class PostRepositoryTest extends TestCase
             'slug' => 'test-post',
         ]);
 
-        PostHistory::factory()->create([
+        PostRevision::factory()->create([
             'post_id' => $post->id
         ]);
 

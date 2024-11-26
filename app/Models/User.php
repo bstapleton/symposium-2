@@ -52,6 +52,11 @@ class User extends Authenticatable
         return $this->hasMany(Post::class);
     }
 
+    protected function postsRevisions(): HasMany
+    {
+        return $this->hasMany(PostRevision::class);
+    }
+
     protected function replies(): HasMany
     {
         return $this->hasMany(Reply::class);

@@ -25,7 +25,7 @@ class DatabaseSeeder extends Seeder
 
         $this->call([
             PostSeeder::class,
-            PostHistorySeeder::class,
+            PostRevisionSeeder::class,
         ]);
     }
 }

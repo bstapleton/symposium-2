@@ -26,9 +26,9 @@ class Reply extends Model
         return $this->belongsTo(User::class);
     }
 
-    protected function postHistory(): BelongsTo
+    public function replyable()
     {
-        return $this->belongsTo(PostHistory::class);
+        return $this->morphTo();
     }
 
     protected function parent(): BelongsTo
@@ -39,10 +39,5 @@ class Reply extends Model
     protected function replies(): HasMany
     {
         return $this->hasMany(self::class);
-    }
-
-    protected function post(): HasOneThrough
-    {
-        return $this->hasOneThrough(Post::class, PostHistory::class);
     }
 }

@@ -2,8 +2,8 @@
 
 namespace App\Providers;
 
-use App\Repositories\PostHistoryRepository;
-use App\Repositories\IHistoryRepository;
+use App\Repositories\PostRevisionRepository;
+use App\Repositories\IRevisionRepository;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -13,7 +13,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->bind(IHistoryRepository::class, PostHistoryRepository::class);
+        $this->app->bind(IRevisionRepository::class, PostRevisionRepository::class);
     }
 
     /**
