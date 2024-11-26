@@ -50,10 +50,6 @@ class PostRevision extends History
         return $attributes;
     }
 
-//    protected $dispatchesEvents = [
-//        'creating' => PostRevisionCreating::class,
-//    ];
-
     public function historyable()
     {
         return $this->morphTo();
