@@ -24,17 +24,12 @@ class PostSeeder extends Seeder
             'user_id' => $user->id,
         ])->map(function (Post $post) use ($user, $user2) {
             // Create some replies to the post by someone else
-            Reply::factory()->count(3)->create([
+            Reply::factory()->withParentPost($post->id)->count(3)->create([
                 'user_id' => $user2->id,
-                'replyable_id' => $post->id,
-                'replyable_type' => Post::class,
             ])->map(function (Reply $reply) use ($post, $user) {
                 // Create a reply to each reply by the OP
-                $replyReply = Reply::factory()->create([
+                Reply::factory()->withParentReply($reply->id)->create([
                     'user_id' => $user->id,
-                    'parent_id' => $reply->id,
-                    'replyable_id' => $post->id,
-                    'replyable_type' => PostRevision::class,
                 ]);
             });
         });
@@ -43,23 +38,18 @@ class PostSeeder extends Seeder
             'user_id' => $user->id,
         ])->map(function (Post $post) use ($user, $user2) {
             // Create the revision data
-            $postRevision = PostRevision::factory()->create([
+            PostRevision::factory()->create([
                 'post_id' => $post->id,
                 'user_id' => $user->id,
             ]);
 
-            // Create some replies to the post by someone else
-            Reply::factory()->count(3)->create([
+            // Create some replies to the revision by someone else
+            Reply::factory()->withParentRevision($post->id)->count(3)->create([
                 'user_id' => $user2->id,
-                'replyable_id' => $post->id,
-                'replyable_type' => Post::class,
-            ])->map(function (Reply $reply) use ($postRevision, $user) {
+            ])->map(function (Reply $reply) use ($user) {
                 // Create a reply to each reply by the OP
-                $replyReply = Reply::factory()->create([
+                Reply::factory()->withParentReply($reply->id)->create([
                     'user_id' => $user->id,
-                    'parent_id' => $reply->id,
-                    'replyable_id' => $postRevision->id,
-                    'replyable_type' => PostRevision::class,
                 ]);
             });
         });

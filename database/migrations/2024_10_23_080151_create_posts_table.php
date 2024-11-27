@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('posts', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->foreignId('user_id')->constrained('users');
             $table->text('slug')->unique();
-            $table->dateTime('created_at');
             $table->text('title');
             $table->longText('text');
+            $table->dateTime('created_at');
 
-            $table->foreignId('user_id')->constrained('users');
         });
     }
 

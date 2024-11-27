@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Events\PostCreating;
+use App\Events\PostDeleting;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -32,6 +33,7 @@ class Post extends Model
 
     protected $dispatchesEvents = [
         'creating' => PostCreating::class,
+        'deleting' => PostDeleting::class,
     ];
 
     protected function user(): BelongsTo
@@ -44,7 +46,7 @@ class Post extends Model
         return $this->morphMany(Reply::class, 'replyable');
     }
 
-    protected function histories(): HasMany
+    protected function revisions(): HasMany
     {
         return $this->hasMany(PostRevision::class);
     }

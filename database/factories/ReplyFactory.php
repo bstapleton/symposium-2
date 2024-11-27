@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Post;
+use App\Models\PostRevision;
 use App\Models\Reply;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -24,12 +26,33 @@ class ReplyFactory extends Factory
         ];
     }
 
-    public function withParent(int $postHistoryId): Factory|ReplyFactory
+    public function withParentReply(int $replyId): Factory|ReplyFactory
     {
-        return $this->state(function (array $attributes) use ($postHistoryId) {
-            $parent = Reply::factory()->create(['post_history_id' => $postHistoryId]);
+        return $this->state(function (array $attributes) use ($replyId) {
             return [
-                'parent_id' => $parent->id,
+                'replyable_id' => $replyId,
+                'replyable_type' => Reply::class,
+                'parent_id' => $replyId,
+            ];
+        });
+    }
+
+    public function withParentRevision(int $revisionId): Factory|ReplyFactory
+    {
+        return $this->state(function (array $attributes) use ($revisionId) {
+            return [
+                'replyable_id' => $revisionId,
+                'replyable_type' => PostRevision::class
+            ];
+        });
+    }
+
+    public function withParentPost(int $postId): Factory|ReplyFactory
+    {
+        return $this->state(function (array $attributes) use ($postId) {
+            return [
+                'replyable_id' => $postId,
+                'replyable_type' => Post::class
             ];
         });
     }

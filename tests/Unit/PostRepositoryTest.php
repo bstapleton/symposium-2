@@ -4,10 +4,13 @@ namespace Tests\Unit;
 
 use App\Models\Post;
 use App\Models\PostRevision;
+use App\Models\Reply;
 use App\Models\User;
 use App\Repositories\PostRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\Attributes\UsesClass;
 use Tests\TestCase;
 
@@ -15,6 +18,7 @@ use Tests\TestCase;
 #[UsesClass(User::class)]
 #[UsesClass(Post::class)]
 #[UsesClass(PostRevision::class)]
+#[UsesClass(Reply::class)]
 class PostRepositoryTest extends TestCase
 {
     use RefreshDatabase;
@@ -49,19 +53,13 @@ class PostRepositoryTest extends TestCase
         // Create a post
         $post = Post::factory()->create([
             'user_id' => $this->user->id,
-            'slug' => 'test-post',
-        ]);
-
-        PostRevision::factory()->create([
-            'post_id' => $post->id
         ]);
 
         // Retrieve the post by slug
-        $retrievedPost = $this->repository->show('test-post');
+        $retrievedPost = $this->repository->show($post->slug);
 
         // Assert that we have the correct post
         $this->assertEquals($post->id, $retrievedPost->id);
-        $this->assertEquals($post->slug, $retrievedPost->slug);
     }
 
     #[Test]
@@ -70,9 +68,9 @@ class PostRepositoryTest extends TestCase
         // Create some data for the post
         $data = [
             'user_id' => $this->user->id,
-            'slug' => 'i-am-a-teapot',
             'title' => 'I am a teapot',
             'text' => 'Short and stout',
+            'created_at' => now(),
         ];
 
         // Create the post
@@ -80,7 +78,7 @@ class PostRepositoryTest extends TestCase
 
         // Assert that we have a new post
         $this->assertInstanceOf(Post::class, $post);
-        $this->assertEquals($data['slug'], $post->slug);
+        $this->assertEquals(Str::slug($post->title), $post->slug);
     }
 
     #[Test]
@@ -91,13 +89,107 @@ class PostRepositoryTest extends TestCase
             'user_id' => $this->user->id,
         ]);
 
-        // Assert that the post exists before destruction
-        $this->assertNotNull(Post::find($post->id));
+        // Destroy the post
+        $this->repository->destroy($post->id);
+
+        // Assert that the post was destroyed
+        $this->assertNull(Post::find($post->id));
+    }
+
+    #[Test]
+    public function it_can_destroy_a_post_with_replies()
+    {
+        // Create a post
+        $post = Post::factory()->create([
+            'user_id' => $this->user->id,
+        ]);
+
+        $reply = Reply::factory()->create([
+            'replyable_id' => $post->id,
+            'replyable_type' => Post::class,
+            'user_id' => $this->user->id
+        ]);
+
+        $replyId = $reply->id;
+
+        // Assert that things exist before destruction
+        $this->assertNotNull($post->replies->first());
 
         // Destroy the post
         $this->repository->destroy($post->id);
 
         // Assert that the post was destroyed
         $this->assertNull(Post::find($post->id));
+        $this->assertNull(Reply::find($replyId));
+    }
+
+    #[Test]
+    public function it_can_destroy_a_post_with_revisions()
+    {
+        // Create a post
+        $post = Post::factory()->create([
+            'user_id' => $this->user->id,
+        ]);
+
+        $revision = PostRevision::factory()->create([
+            'post_id' => $post->id,
+            'user_id' => $this->user->id
+        ]);
+
+        $revisionId = $revision->id;
+
+        // Assert that things exist before destruction
+        $this->assertNotNull($post->revisions->first());
+
+        // Destroy the post
+        $this->repository->destroy($post->id);
+
+        // Assert that the post was destroyed
+        $this->assertNull(Post::find($post->id));
+        $this->assertNull(PostRevision::find($revisionId));
+    }
+
+    #[Test]
+    public function it_can_destroy_a_post_with_complex_relations()
+    {
+        // Create a post + reply to the post
+        $post = Post::factory()->create([
+            'user_id' => $this->user->id,
+        ]);
+        $postId = $post->id;
+        $replyToPost = Reply::factory()->withParentPost($postId)->create([
+            'user_id' => $this->user->id
+        ]);
+        $replyToPostId = $replyToPost->id;
+
+        // Create a reply to the post's reply
+        $replyToReply = Reply::factory()->withParentReply($replyToPostId)->create([
+            'user_id' => $this->user->id
+        ]);
+        $replyToReplyId = $replyToReply->id;
+
+        // Create a post revision + reply to the revision
+        $revision = PostRevision::factory()->create([
+            'post_id' => $postId,
+            'user_id' => $this->user->id
+        ]);
+        $revisionId = $revision->id;
+        $replyToRevision = Reply::factory()->withParentRevision($revisionId)->create([
+            'user_id' => $this->user->id
+        ]);
+        $replyToRevisionId = $replyToRevision->id;
+
+        // Assert that things exist before destruction
+        $this->assertNotNull($post->revisions->first());
+
+        // Destroy the post
+        $this->repository->destroy($post->id);
+
+        // Assert that the post was destroyed
+        $this->assertNull(Post::find($postId));
+        $this->assertNull(PostRevision::find($revisionId));
+        $this->assertNull(Reply::find($replyToPostId));
+        $this->assertNull(Reply::find($replyToRevisionId));
+        $this->assertNull(Reply::find($replyToReplyId));
     }
 }

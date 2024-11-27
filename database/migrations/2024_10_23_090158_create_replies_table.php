@@ -13,15 +13,13 @@ return new class extends Migration
     {
         Schema::create('replies', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('parent_id')->nullable();
-            $table->unsignedBigInteger('replyable_id');
-            $table->string('replyable_type');
+            $table->foreignId('user_id')->constrained('users');
+            $table->morphs('replyable');
+            $table->foreignId('parent_id')->nullable()->constrained('replies');
             $table->text('title');
             $table->longText('text');
-            $table->tinyInteger('status')->default(0);
             $table->timestamps();
 
-            $table->foreignId('user_id')->constrained('users');
         });
     }
 

@@ -13,13 +13,12 @@ return new class extends Migration
     {
         Schema::create('post_revisions', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedBigInteger('parent_id')->nullable();
-            $table->dateTime('created_at');
+            $table->foreignId('user_id')->constrained('users');
+            $table->foreignId('post_id')->constrained('posts');
             $table->text('title')->nullable();
             $table->longText('text')->nullable();
+            $table->dateTime('created_at');
 
-            $table->foreignId('post_id')->constrained('posts');
-            $table->foreignId('user_id')->constrained('users');
         });
     }
 

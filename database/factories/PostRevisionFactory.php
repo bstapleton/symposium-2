@@ -6,7 +6,7 @@ use App\Models\PostRevision;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\History>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Revision>
  */
 class PostRevisionFactory extends Factory
 {
@@ -24,24 +24,6 @@ class PostRevisionFactory extends Factory
             'title' => $faker->sentence(),
             'text' => $faker->paragraph(),
         ];
-    }
-
-    /**
-     * Create a revision of a post's old content
-     *
-     * @param int $postId
-     * @param int $userId
-     * @return Factory|PostRevisionFactory
-     */
-    public function withParent(int $postId, int $userId): Factory|PostRevisionFactory
-    {
-        return $this->state(function (array $attributes) use ($postId, $userId) {
-            $parent = PostRevision::factory()->create(['post_id' => $postId, 'user_id' => $userId]);
-            return [
-                'parent_id' => $parent->id,
-                'user_id' => $userId
-            ];
-        });
     }
 
     /**

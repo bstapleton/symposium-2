@@ -22,7 +22,6 @@ class PostRevisionSeeder extends Seeder
         $postRevised = PostRevision::factory()->create([
             'title' => 'I am a revised title, my previous revision was: ' . $postInitial->id,
             'post_id' => $postInitial->post_id,
-            'parent_id' => $postInitial->id,
             'user_id' => $user->id,
         ]);
 
@@ -31,7 +30,6 @@ class PostRevisionSeeder extends Seeder
             'title' => $postRevised->title,
             'text' => 'I am some revised text, my previous revision was: ' . $postRevised->id,
             'post_id' => $postRevised->post_id,
-            'parent_id' => $postRevised->id,
             'user_id' => $user->id,
         ]);
     }

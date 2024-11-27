@@ -11,19 +11,17 @@ use RedExplosion\Sqids\Concerns\HasSqids;
 /**
  * @property integer post_id
  * @property integer user_id
- * @property integer parent_id
  * @property string created_at
  * @property string title
  * @property string text
  */
-class PostRevision extends History
+class PostRevision extends Revision
 {
     use HasFactory, HasSqids;
 
     protected $fillable = [
         'post_id',
         'user_id',
-        'parent_id',
         'created_at',
         'title',
         'text',

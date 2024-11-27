@@ -35,118 +35,106 @@ class PostRevisionRepositoryTest extends TestCase
     }
 
     #[Test]
-    public function it_can_retrieve_all_post_histories()
+    public function it_can_retrieve_all_post_revisions()
     {
-        // Create some post histories
+        // Create some post revisions
         PostRevision::factory()->count(3)->create([
             'post_id' => $this->post->id,
             'user_id' => $this->user->id
         ]);
 
-        // Retrieve all post histories
-        $postHistories = $this->repository->all();
+        // Retrieve all post revisions
+        $postRevisions = $this->repository->all();
 
-        // Assert that we have 3 post histories
-        $this->assertCount(3, $postHistories);
+        // Assert that we have 3 post revisions
+        $this->assertCount(3, $postRevisions);
     }
 
     #[Test]
     public function it_can_retrieve_a_post_revision_by_id()
     {
-        // Create a post history
-        $postHistory = PostRevision::factory()->create([
+        // Create a post revision
+        $postRevision = PostRevision::factory()->create([
             'post_id' => $this->post->id,
             'user_id' => $this->user->id
         ]);
 
-        // Retrieve the post history by ID
-        $retrievedPostHistory = $this->repository->show($postHistory->id);
+        // Retrieve the post revision by ID
+        $retrievedPostRevision = $this->repository->show($postRevision->id);
 
-        // Assert that we have the correct post history
-        $this->assertEquals($postHistory->id, $retrievedPostHistory->id);
+        // Assert that we have the correct post revision
+        $this->assertEquals($postRevision->id, $retrievedPostRevision->id);
     }
 
     #[Test]
     public function it_can_create_a_new_post_revision_title()
     {
         // Create a revision with a changed title
-        $postHistory = PostRevision::factory()->onlyTitle($this->post->id, $this->user->id)->create();
+        $postRevision = PostRevision::factory()->onlyTitle($this->post->id, $this->user->id)->create();
 
-        // Assert that we have a new post history
+        // Assert that we have a new post revision
         $this->assertCount(1, PostRevision::all());
 
         // It's definitely bound to a post
-        $this->assertNotNull($postHistory->post->slug);
+        $this->assertNotNull($postRevision->post->slug);
 
         // And the data that we're expecting is there
-        $this->assertNotNull($postHistory->title);
-        $this->assertNull($postHistory->text);
+        $this->assertNotNull($postRevision->title);
+        $this->assertNull($postRevision->text);
     }
 
     #[Test]
     public function it_can_create_a_new_post_revision_text()
     {
         // Create a revision with a changed title
-        $postHistory = PostRevision::factory()->onlyText($this->post->id, $this->user->id)->create();
+        $postRevision = PostRevision::factory()->onlyText($this->post->id, $this->user->id)->create();
 
-        // Assert that we have a new post history
+        // Assert that we have a new post revision
         $this->assertCount(1, PostRevision::all());
 
         // It's definitely bound to a post
-        $this->assertNotNull($postHistory->post->slug);
+        $this->assertNotNull($postRevision->post->slug);
 
         // And the data that we're expecting is there
-        $this->assertNull($postHistory->title);
-        $this->assertNotNull($postHistory->text);
+        $this->assertNull($postRevision->title);
+        $this->assertNotNull($postRevision->text);
     }
 
     #[Test]
     public function that_validation_fails_if_no_title_or_text_is_provided()
     {
-        $postHistory = PostRevision::make([
+        $postRevision = PostRevision::make([
             'post_id' => $this->post->id,
             'user_id' => $this->user->id,
             'created_at' => now(),
         ]);
 
-        $this->assertFalse(!$postHistory->save());
-    }
-
-    #[Test]
-    public function post_histories_can_have_parent_post_histories()
-    {
-        $postHistory = PostRevision::factory()->withParent($this->post->id, $this->user->id)->create([
-            'post_id' => $this->post->id
-        ]);
-
-        $this->assertNotNull($postHistory->parent);
-        $this->assertInstanceOf(PostRevision::class, $postHistory->parent);
-        $this->assertEquals($postHistory->parent_id, $postHistory->parent->id);
+        $this->assertFalse(!$postRevision->save());
     }
 
     #[Test]
     public function it_can_destroy_a_post_revision()
     {
-        // Create a post history
-        $postHistory = PostRevision::factory()->create([
+        // Create a post revision
+        $postRevision = PostRevision::factory()->create([
             'post_id' => $this->post->id,
             'user_id' => $this->user->id
         ]);
 
-        // Assert that the post history exists before destruction
-        $this->assertNotNull(PostRevision::find($postHistory->id));
+        // Assert that the post revision exists before destruction
+        $this->assertNotNull(PostRevision::find($postRevision->id));
 
-        // Destroy the post history
-        $this->repository->destroy($postHistory->id);
+        // Destroy the post revision
+        $this->repository->destroy($postRevision->id);
 
-        // Assert that the post history was destroyed
-        $this->assertNull(PostRevision::find($postHistory->id));
+        // Assert that the post revision was destroyed
+        $this->assertNull(PostRevision::find($postRevision->id));
     }
 
     #[Test]
-    public function it_can_retrieve_the_older_post_histories()
+    public function it_can_retrieve_the_older_post_revisions()
     {
-        // Create some post histories
+        // Create some post revisions
         PostRevision::factory(3)->create([
             'post_id' => $this->post->id,
             'user_id' => $this->user->id
@@ -165,9 +153,9 @@ class PostRevisionRepositoryTest extends TestCase
     }
 
     #[Test]
-    public function it_can_retrieve_the_newer_post_histories()
+    public function it_can_retrieve_the_newer_post_revisions()
     {
-        // Create a post history
+        // Create a post revision
         $old = PostRevision::factory()->create([
             'post_id' => $this->post->id,
             'user_id' => $this->user->id
@@ -188,7 +176,7 @@ class PostRevisionRepositoryTest extends TestCase
     #[Test]
     public function it_can_retrieve_the_oldest_post_revision()
     {
-        // Create a post history
+        // Create a post revision
         $old = PostRevision::factory()->create([
             'post_id' => $this->post->id,
             'user_id' => $this->user->id
@@ -213,7 +201,7 @@ class PostRevisionRepositoryTest extends TestCase
     #[Test]
     public function it_resolves_null_if_current_is_the_oldest()
     {
-        // Create a post history
+        // Create a post revision
         $revision = PostRevision::factory()->create([
             'post_id' => $this->post->id,
             'user_id' => $this->user->id
@@ -227,7 +215,7 @@ class PostRevisionRepositoryTest extends TestCase
     #[Test]
     public function it_can_retrieve_the_newest_post_revision()
     {
-        // Create a post history
+        // Create a post revision
         $old = PostRevision::factory()->create([
             'post_id' => $this->post->id,
             'user_id' => $this->user->id
@@ -252,7 +240,7 @@ class PostRevisionRepositoryTest extends TestCase
     #[Test]
     public function it_resolves_null_if_current_is_the_newest()
     {
-        // Create a post history
+        // Create a post revision
         $revision = PostRevision::factory()->create([
             'post_id' => $this->post->id,
             'user_id' => $this->user->id
@@ -266,7 +254,7 @@ class PostRevisionRepositoryTest extends TestCase
     #[Test]
     public function it_can_retrieve_the_previous_post_revision()
     {
-        // Create a post history
+        // Create a post revision
         $old = PostRevision::factory()->create([
             'post_id' => $this->post->id,
             'user_id' => $this->user->id
@@ -288,7 +276,7 @@ class PostRevisionRepositoryTest extends TestCase
     #[Test]
     public function it_resolves_null_if_there_is_no_previous_revision()
     {
-        // Create a post history
+        // Create a post revision
         $revision = PostRevision::factory()->create([
             'post_id' => $this->post->id,
             'user_id' => $this->user->id
@@ -302,7 +290,7 @@ class PostRevisionRepositoryTest extends TestCase
     #[Test]
     public function it_can_retrieve_the_next_post_revision()
     {
-        // Create a post history
+        // Create a post revision
         $old = PostRevision::factory()->create([
             'post_id' => $this->post->id,
             'user_id' => $this->user->id
@@ -324,7 +312,7 @@ class PostRevisionRepositoryTest extends TestCase
     #[Test]
     public function it_resolves_null_if_there_is_no_next_revision()
     {
-        // Create a post history
+        // Create a post revision
         $revision = PostRevision::factory()->create([
             'post_id' => $this->post->id,
             'user_id' => $this->user->id
