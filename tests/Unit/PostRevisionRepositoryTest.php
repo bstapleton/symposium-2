@@ -186,7 +186,7 @@ class PostRevisionRepositoryTest extends TestCase
     }
 
     #[Test]
-    public function it_can_retrieve_the_first_post_revision()
+    public function it_can_retrieve_the_oldest_post_revision()
     {
         // Create a post history
         $old = PostRevision::factory()->create([
@@ -205,13 +205,27 @@ class PostRevisionRepositoryTest extends TestCase
             'user_id' => $this->user->id
         ]);
 
-        $first = $this->repository->first($new->id);
+        $first = $this->repository->oldest($new->id);
 
         $this->assertTrue($first->id === $old->id);
     }
 
     #[Test]
-    public function it_returns_null_if_this_is_the_oldest_revision()
+    public function it_resolves_null_if_current_is_the_oldest()
+    {
+        // Create a post history
+        $revision = PostRevision::factory()->create([
+            'post_id' => $this->post->id,
+            'user_id' => $this->user->id
+        ]);
+
+        $oldest = $this->repository->oldest($revision->id);
+
+        $this->assertNull($oldest);
+    }
+
+    #[Test]
+    public function it_can_retrieve_the_newest_post_revision()
     {
         // Create a post history
         $old = PostRevision::factory()->create([
@@ -219,9 +233,34 @@ class PostRevisionRepositoryTest extends TestCase
             'user_id' => $this->user->id
         ]);
 
-        $first = $this->repository->first($old->id);
+        // Create some newer ones
+        PostRevision::factory(3)->create([
+            'post_id' => $this->post->id,
+            'user_id' => $this->user->id
+        ]);
 
-        $this->assertNull($first);
+        $new = PostRevision::factory()->create([
+            'post_id' => $this->post->id,
+            'user_id' => $this->user->id
+        ]);
+
+        $last = $this->repository->newest($old->id);
+
+        $this->assertTrue($last->id === $new->id);
+    }
+
+    #[Test]
+    public function it_resolves_null_if_current_is_the_newest()
+    {
+        // Create a post history
+        $revision = PostRevision::factory()->create([
+            'post_id' => $this->post->id,
+            'user_id' => $this->user->id
+        ]);
+
+        $newest = $this->repository->newest($revision->id);
+
+        $this->assertNull($newest);
     }
 
     #[Test]
@@ -247,6 +286,20 @@ class PostRevisionRepositoryTest extends TestCase
     }
 
     #[Test]
+    public function it_resolves_null_if_there_is_no_previous_revision()
+    {
+        // Create a post history
+        $revision = PostRevision::factory()->create([
+            'post_id' => $this->post->id,
+            'user_id' => $this->user->id
+        ]);
+
+        $previous = $this->repository->previous($revision->id);
+
+        $this->assertNull($previous);
+    }
+
+    #[Test]
     public function it_can_retrieve_the_next_post_revision()
     {
         // Create a post history
@@ -266,5 +319,19 @@ class PostRevisionRepositoryTest extends TestCase
         $this->assertNotEquals($next->id, $old->id);
         $this->assertEquals($new->id, $next->id);
         $this->assertGreaterThan($old->id, $next->id);
+    }
+
+    #[Test]
+    public function it_resolves_null_if_there_is_no_next_revision()
+    {
+        // Create a post history
+        $revision = PostRevision::factory()->create([
+            'post_id' => $this->post->id,
+            'user_id' => $this->user->id
+        ]);
+
+        $next = $this->repository->next($revision->id);
+
+        $this->assertNull($next);
     }
 }
