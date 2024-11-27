@@ -16,11 +16,11 @@ class PostRepository implements IEloquentRepository
         $post = Post::where('slug', $slug)->firstOrFail();
         // TODO: calls to the history repository should be handled in the service layer following the creation of the post
         $postHistoryRepository = new PostRevisionRepository();
-        $postRevision = $postHistoryRepository->latest($post->id);
+        $postRevision = $postHistoryRepository->newest($post->id);
 
         if ($postRevision) {
-            $post->created_at = $postHistoryRepository->first($postRevision->id)
-                ? $postHistoryRepository->first($postRevision->id)->created_at
+            $post->created_at = $postHistoryRepository->oldest($postRevision->id)
+                ? $postHistoryRepository->oldest($postRevision->id)->created_at
                 : $postRevision->created_at;
             $post->updated_at = $postRevision->created_at;
             $post->title = $postRevision->title;

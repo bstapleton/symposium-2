@@ -3,7 +3,6 @@
 namespace App\Repositories;
 
 use App\Models\PostRevision;
-use http\Exception\UnexpectedValueException;
 
 class PostRevisionRepository implements IRevisionRepository
 {
@@ -11,11 +10,6 @@ class PostRevisionRepository implements IRevisionRepository
     public function all()
     {
         return PostRevision::all();
-    }
-
-    public function latest(int $postId)
-    {
-        return PostRevision::where('post_id', $postId)->orderBy('id', 'desc')->first();
     }
 
     public function show(int $id)
@@ -26,10 +20,6 @@ class PostRevisionRepository implements IRevisionRepository
     public function store(array $data)
     {
         $data['created_at'] = now();
-
-        if (empty($data['title']) && empty($data['text'])) {
-            throw new UnexpectedValueException();
-        }
 
         return PostRevision::create($data);
     }
@@ -49,13 +39,24 @@ class PostRevisionRepository implements IRevisionRepository
         return PostRevision::where('id', '>', $id)->orderBy('id', 'asc')->get();
     }
 
-    public function first(int $id)
+    public function oldest(int $id)
     {
         if ($this->older($id)->count() === 0) {
             return null;
         }
 
         return $this->older($id)->reverse()->first();
+    }
+
+    public function newest(int $id)
+    {
+        if ($this->newer($id)->count() === 0) {
+            return null;
+        }
+
+        $current = PostRevision::find($id);
+
+        return $this->newer($id)->reverse()->first();
     }
 
     public function previous(int $id)
