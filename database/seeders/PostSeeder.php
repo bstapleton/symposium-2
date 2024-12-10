@@ -22,36 +22,64 @@ class PostSeeder extends Seeder
         // Create some posts without any revisions
         Post::factory()->count(3)->create([
             'user_id' => $user->id,
+            'created_at' => now()->subDays(3),
         ])->map(function (Post $post) use ($user, $user2) {
             // Create some replies to the post by someone else
             Reply::factory()->withParentPost($post->id)->count(3)->create([
                 'user_id' => $user2->id,
+                'created_at' => now()->subDays(2),
             ])->map(function (Reply $reply) use ($post, $user) {
                 // Create a reply to each reply by the OP
+                $date = now()->subMinutes(rand(10, 900));
                 Reply::factory()->withParentReply($reply->id)->create([
                     'user_id' => $user->id,
+                    'created_at' => $date,
+                    'updated_at' => $date,
                 ]);
             });
         });
 
-        Post::factory()->count(3)->create([
+        Post::first()->update(['slug' => 'no-revisions']);
+
+        // Create one with a single revision
+        $post = Post::factory()->create([
             'user_id' => $user->id,
-        ])->map(function (Post $post) use ($user, $user2) {
-            // Create the revision data
-            PostRevision::factory()->create([
-                'post_id' => $post->id,
+            'title' => 'Single revision',
+        ]);
+
+        PostRevision::factory()->create([
+            'post_id' => $post->id,
+            'user_id' => $user->id,
+        ]);
+
+        Reply::factory()->withParentRevision($post->id)->count(3)->create([
+            'user_id' => $user2->id,
+        ])->map(function (Reply $reply) use ($user) {
+            // Create a reply to each reply by the OP
+            Reply::factory()->withParentReply($reply->id)->create([
                 'user_id' => $user->id,
             ]);
+        });
 
-            // Create some replies to the revision by someone else
-            Reply::factory()->withParentRevision($post->id)->count(3)->create([
-                'user_id' => $user2->id,
-            ])->map(function (Reply $reply) use ($user) {
-                // Create a reply to each reply by the OP
-                Reply::factory()->withParentReply($reply->id)->create([
-                    'user_id' => $user->id,
-                ]);
-            });
+        // Create one with multiple revisions
+        $post = Post::factory()->create([
+            'user_id' => $user->id,
+            'title' => 'Multiple revisions',
+        ]);
+
+        PostRevision::factory()->count(2)->create([
+            'post_id' => $post->id,
+            'user_id' => $user->id,
+        ]);
+
+        // Create some replies to the revision by someone else
+        Reply::factory()->withParentRevision($post->id)->count(3)->create([
+            'user_id' => $user2->id,
+        ])->map(function (Reply $reply) use ($user) {
+            // Create a reply to each reply by the OP
+            Reply::factory()->withParentReply($reply->id)->create([
+                'user_id' => $user->id,
+            ]);
         });
     }
 }

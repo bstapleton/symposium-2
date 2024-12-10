@@ -36,7 +36,7 @@ class Post extends Model
         'deleting' => PostDeleting::class,
     ];
 
-    protected function user(): BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
@@ -46,7 +46,7 @@ class Post extends Model
         return $this->morphMany(Reply::class, 'replyable');
     }
 
-    protected function revisions(): HasMany
+    public function revisions(): HasMany
     {
         return $this->hasMany(PostRevision::class);
     }
