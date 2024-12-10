@@ -53,17 +53,17 @@ class PostRevision extends Revision
         return $this->morphTo();
     }
 
-    protected function post(): BelongsTo
+    public function post(): BelongsTo
     {
         return $this->belongsTo(Post::class);
     }
 
-    protected function parent(): BelongsTo
+    public function parent(): BelongsTo
     {
         return $this->belongsTo(self::class);
     }
 
-    protected function user(): BelongsTo
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
