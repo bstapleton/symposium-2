@@ -79,10 +79,11 @@ class PostController extends Controller
             'sqid' => $sqid ?? null,
             'slug' => $post->slug,
             'created_at' => $post->created_at,
-            'hasRevisions' => $hasRevisions,
+            'has_revisions' => $hasRevisions,
             'previous' => $previous ?? null,
             'revisions' => $revisions,
-            'replies' => $post->replies->reverse()
+            'replies' => $latest ? $latest->replies : $post->replies->reverse(),
+            'original_replies' => $latest ? $post->replies : null,
         ]);
     }
 

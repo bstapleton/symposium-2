@@ -6,7 +6,7 @@ use App\Events\ReplyDeleting;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 /**
  * @property integer id
@@ -37,7 +37,7 @@ class Reply extends Model
     protected $morphMap = [
         Post::class => 'post',
         PostRevision::class => 'post_revision',
-        Reply::class => 'reply',
+        Reply::class => 'replies',
     ];
 
     protected $dispatchesEvents = [
@@ -49,13 +49,23 @@ class Reply extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function post(): BelongsTo
+    {
+        return $this->belongsTo(Post::class);
+    }
+
+    public function postRevision(): BelongsTo
+    {
+        return $this->belongsTo(PostRevision::class);
+    }
+
     public function replyable()
     {
         return $this->morphTo();
     }
 
-    protected function replies(): HasMany
+    public function replies(): MorphMany
     {
-        return $this->hasMany(Reply::class, 'parent_id');
+        return $this->morphMany(self::class, 'replyable');
     }
 }
