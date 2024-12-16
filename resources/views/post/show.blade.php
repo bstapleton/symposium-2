@@ -9,9 +9,9 @@
     @if ($previous)
         <div class="rounded-lg border p-6 dark:border-indigo-600 bg-zinc-900 mb-4">
             @if ($previous->sqid)
-                <h2 class="text-lg font-semibold">Previous revision ({{ $previous->sqid }})</h2>
+                <h2 class="text-lg font-semibold">Previous version ({{ $previous->sqid }})</h2>
             @else
-                <h2 class="text-lg font-semibold">Original post {{ $previous->sqid }}</h2>
+                <h2 class="text-lg font-semibold">Previous version (Original post)</h2>
             @endif
             <p class="text-base">
                 <strong class="font-bold">Title:</strong> {{ $previous->title }}<br>

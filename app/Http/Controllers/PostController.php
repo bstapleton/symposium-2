@@ -89,26 +89,31 @@ class PostController extends Controller
 
     public function revision(Post $post, string $sqid): View
     {
-        $history = PostRevision::find(PostRevision::keyFromSqid($sqid));
-        $older = $history->post->revisions->where('id', '<', $history->id)->reverse();
-        $newer = $history->post->revisions->where('id', '>', $history->id)->reverse();
+        $currentRevision = PostRevision::find(PostRevision::keyFromSqid($sqid));
+        $olderList = $currentRevision->post->revisions->where('id', '<', $currentRevision->id)->reverse();
+        $newerList = $currentRevision->post->revisions->where('id', '>', $currentRevision->id)->reverse();
 
         $differ = new Differ(new UnifiedDiffOutputBuilder);
 
-        if ($older->count()) {
-            $oldDiff = $differ->diff($older->first()->text, $history->text);
+        if ($olderList->count()) {
+            $oldDiff = $differ->diff($olderList->first()->text, $currentRevision->text);
+        } else {
+            $oldDiff = $differ->diff($post->text, $currentRevision->text);
         }
 
-        if ($newer->count()) {
-            $newDiff = $differ->diff($history->text, $newer->first()->text);
+        if ($newerList->count()) {
+            $newDiff = $differ->diff($currentRevision->text, $newerList->first()->text);
         }
 
         return view('post.revision', [
-            'revision' => $history,
-            'older' => $older,
-            'newer' => $newer,
-            'olderDiff' => $oldDiff ?? null,
-            'newerDiff' => $newDiff ?? null,
+            'revision' => $currentRevision,
+            'post_id' => $post->id,
+            'older' => $olderList,
+            'newer' => $newerList,
+            'older_diff' => $oldDiff,
+            'newer_diff' => $newDiff ?? null,
+            'created_at' => $post->created_at,
+            'replies' => $currentRevision->replies,
         ]);
     }
 
