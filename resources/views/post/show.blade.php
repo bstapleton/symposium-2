@@ -22,22 +22,24 @@
         </div>
     @endif
 
-    <div class="rounded-lg border p-6  dark:border-indigo-600 bg-zinc-900 mb-4">
-        @if ($previous)
-            <h2 class="text-lg font-semibold">Version history ({{ $revisions->count() + 2 }})</h2>
-        @else
-            <h2 class="text-lg font-semibold">Version history (1)</h2>
-        @endif
-        <ul class="list-disc list-inside space-y-1 text-base mb-4 mt-2">
-            <li class="list-item"><em class="italic"><span class="font-bold">[Current]</span> {{ $title }} ({{ $created_at }})</em></li>
-            @foreach ($revisions as $revision)
-                <li class="list-item"><a class="underline" href="{{ $slug }}/history/{{ $revision->sqid }}">[{{ $revision->sqid }}] {{ $revision->title }}</a> ({{ $revision->created_at }})</li>
-            @endforeach
-            @if ($has_revisions)
-                <li><a class="underline" href="{{ $slug }}?original=true">Original post</a> ({{ $created_at }})</li>
+    @if ($has_revisions)
+        <div class="rounded-lg border p-6  dark:border-indigo-600 bg-zinc-900 mb-4">
+            @if ($previous)
+                <h2 class="text-lg font-semibold">Version history ({{ $revisions->count() + 2 }})</h2>
+            @else
+                <h2 class="text-lg font-semibold">Version history (1)</h2>
             @endif
-        </ul>
-    </div>
+            <ul class="list-disc list-inside space-y-1 text-base mb-4 mt-2">
+                <li class="list-item"><em class="italic"><span class="font-bold">[Current]</span> {{ $title }} ({{ $created_at }})</em></li>
+                @foreach ($revisions as $revision)
+                    <li class="list-item"><a class="underline" href="{{ $slug }}/history/{{ $revision->sqid }}">[{{ $revision->sqid }}] {{ $revision->title }}</a> ({{ $revision->created_at }})</li>
+                @endforeach
+                @if ($has_revisions)
+                    <li><a class="underline" href="{{ $slug }}?original=true">Original post</a> ({{ $created_at }})</li>
+                @endif
+            </ul>
+        </div>
+    @endif
 
     <div class="rounded-lg border p-6 dark:border-indigo-600 bg-zinc-900 mb-4">
         <h2 class="text-lg font-semibold">Replies</h2>

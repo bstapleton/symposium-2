@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\Role;
 use App\Models\Post;
 use App\Models\PostRevision;
 use App\Models\Reply;
@@ -17,7 +18,7 @@ class PostSeeder extends Seeder
     public function run(): void
     {
         $user = User::firstOrFail();
-        $user2 = User::orderBy('id', 'desc')->first();
+        $user2 = User::where('role', Role::USER)->orderBy('id', 'desc')->first();
 
         // Create some posts without any revisions
         Post::factory()->count(3)->create([

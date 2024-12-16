@@ -1,5 +1,7 @@
 <?php
 
+use App\Enums\FeatureFlag;
+use App\Enums\Role;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,6 +19,8 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->unsignedInteger('feature_flag')->default(FeatureFlag::NONE);
+            $table->unsignedInteger('role')->default(Role::USER);
             $table->rememberToken();
             $table->timestamps();
         });

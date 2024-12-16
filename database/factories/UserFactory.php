@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Enums\FeatureFlag;
+use App\Enums\Role;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -39,6 +41,29 @@ class UserFactory extends Factory
     {
         return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
+        ]);
+    }
+
+    public function revisionSystem(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'feature_flag' => FeatureFlag::REVISIONS_SYSTEM,
+        ]);
+    }
+
+    public function moderator(): static
+    {
+        // Moderators are also users
+        return $this->state(fn (array $attributes) => [
+            'role' => Role::MODERATOR->value + Role::USER->value,
+        ]);
+    }
+
+    public function admin(): static
+    {
+        // Admins are all the things
+        return $this->state(fn (array $attributes) => [
+            'role' => Role::ADMIN->value + Role::MODERATOR->value + Role::USER->value,
         ]);
     }
 }

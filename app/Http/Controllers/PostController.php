@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\FeatureFlag;
 use App\Http\Requests\StorePostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Models\Post;
@@ -9,6 +10,7 @@ use App\Models\PostRevision;
 use App\Repositories\PostRevisionRepository;
 use App\Repositories\PostRepository;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Facades\Auth;
 use SebastianBergmann\Diff\Differ;
 use SebastianBergmann\Diff\Output\UnifiedDiffOutputBuilder;
 
@@ -49,8 +51,11 @@ class PostController extends Controller
      */
     public function show(Post $post): View
     {
-        $hasRevisions = $post->revisions->count() > 0;
-        $revisions = $post->revisions->reverse();
+        $user = Auth::user();
+        $hasRevisions = $post->revisions->count() > 0 && $user && $user->feature_flag === FeatureFlag::REVISIONS_SYSTEM;
+        $revisions = $user && $user->feature_flag === FeatureFlag::REVISIONS_SYSTEM
+            ? $post->revisions->reverse()
+            : collect();
 
         // Shift the latest revision so it can be the main content of the view
         $latest = $revisions->shift();
