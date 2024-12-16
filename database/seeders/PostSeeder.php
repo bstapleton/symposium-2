@@ -67,19 +67,25 @@ class PostSeeder extends Seeder
             'title' => 'Multiple revisions',
         ]);
 
+        Reply::factory(2)->create([
+            'user_id' => $user2->id,
+            'replyable_id' => $post->id,
+            'replyable_type' => Post::class,
+        ]);
+
         PostRevision::factory()->count(2)->create([
             'post_id' => $post->id,
             'user_id' => $user->id,
-        ]);
-
-        // Create some replies to the revision by someone else
-        Reply::factory()->withParentRevision($post->id)->count(3)->create([
-            'user_id' => $user2->id,
-        ])->map(function (Reply $reply) use ($user) {
-            // Create a reply to each reply by the OP
-            Reply::factory()->withParentReply($reply->id)->create([
-                'user_id' => $user->id,
-            ]);
+        ])->map(function (PostRevision $revision) use ($user2, $user) {
+            // Create some replies to the revision by someone else
+            Reply::factory()->withParentRevision($revision->id)->count(3)->create([
+                'user_id' => $user2->id,
+            ])->map(function (Reply $reply) use ($user) {
+                // Create a reply to each reply by the OP
+                Reply::factory()->withParentReply($reply->id)->create([
+                    'user_id' => $user->id,
+                ]);
+            });
         });
     }
 }
