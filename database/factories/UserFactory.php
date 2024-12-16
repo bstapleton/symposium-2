@@ -31,6 +31,8 @@ class UserFactory extends Factory
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'role' => Role::USER->value,
+            'feature_flag' => FeatureFlag::NONE->value,
         ];
     }
 
@@ -47,7 +49,7 @@ class UserFactory extends Factory
     public function revisionSystem(): static
     {
         return $this->state(fn (array $attributes) => [
-            'feature_flag' => FeatureFlag::REVISIONS_SYSTEM,
+            'feature_flag' => FeatureFlag::REVISIONS_SYSTEM->value,
         ]);
     }
 
