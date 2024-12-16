@@ -32,7 +32,6 @@ class ReplyFactory extends Factory
             return [
                 'replyable_id' => $replyId,
                 'replyable_type' => Reply::class,
-                'parent_id' => $replyId,
             ];
         });
     }

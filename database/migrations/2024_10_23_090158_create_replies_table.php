@@ -15,7 +15,6 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->foreignId('user_id')->constrained('users');
             $table->morphs('replyable');
-            $table->foreignId('parent_id')->nullable()->constrained('replies');
             $table->text('title');
             $table->longText('text');
             $table->timestamps();
