@@ -13,6 +13,7 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::prefix('posts')->controller(PostController::class)->group(function () {
+    Route::get('/', 'index')->name('post.index');
     Route::get('/{post:slug}', 'show')->name('post.show');
     Route::get('/{post:slug}/history/{sqid}', 'revision')->name('post.revision');
 });
