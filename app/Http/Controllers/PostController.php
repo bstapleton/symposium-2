@@ -53,9 +53,8 @@ class PostController extends Controller
     {
         $user = Auth::user();
         $hasRevisions = $post->revisions->count() > 0 && $user && $user->feature_flag === FeatureFlag::REVISIONS_SYSTEM;
-        $revisions = $user && $user->feature_flag === FeatureFlag::REVISIONS_SYSTEM
-            ? $post->revisions->reverse()
-            : collect();
+        $displayRevisions = $user && $user->feature_flag === FeatureFlag::REVISIONS_SYSTEM;
+        $revisions = $post->revisions->reverse();
 
         // Shift the latest revision so it can be the main content of the view
         $latest = $revisions->shift();
@@ -85,6 +84,7 @@ class PostController extends Controller
             'slug' => $post->slug,
             'created_at' => $post->created_at,
             'has_revisions' => $hasRevisions,
+            'show_revisions' => $displayRevisions,
             'previous' => $previous ?? null,
             'revisions' => $revisions,
             'replies' => $latest ? $latest->replies : $post->replies->reverse(),

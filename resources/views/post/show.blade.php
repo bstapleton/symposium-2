@@ -6,7 +6,7 @@
         <p class="text-base">{{ $text }}</p>
     </div>
 
-    @if ($previous)
+    @if ($previous && $show_revisions)
         <div class="rounded-lg border p-6 dark:border-indigo-600 bg-zinc-900 mb-4">
             @if ($previous->sqid)
                 <h2 class="text-lg font-semibold">Previous version ({{ $previous->sqid }})</h2>
@@ -22,7 +22,7 @@
         </div>
     @endif
 
-    @if ($has_revisions)
+    @if ($has_revisions && $show_revisions)
         <div class="rounded-lg border p-6  dark:border-indigo-600 bg-zinc-900 mb-4">
             @if ($previous)
                 <h2 class="text-lg font-semibold">Version history ({{ $revisions->count() + 2 }})</h2>
@@ -54,7 +54,7 @@
         @endif
     </div>
 
-    @if ($previous)
+    @if ($previous && $show_revisions)
         <div class="rounded-lg border p-6 dark:border-indigo-600 bg-zinc-900 mb-4">
             <h2 class="text-lg font-semibold">Replies to original post</h2>
             @if ($original_replies->count())

@@ -3,12 +3,23 @@
 namespace App\Repositories;
 
 use App\Models\Post;
+use App\Models\PostRevision;
 
 class PostRepository implements IEloquentRepository
 {
     public function all()
     {
-        return Post::all();
+        $posts = Post::with('revisions')->paginate(20);
+
+        foreach ($posts as $post) {
+            $postRevision = $this->getLatestRevision($post);
+            if ($postRevision) {
+                $post->created_at = $postRevision->created_at;
+                $post->title = $postRevision->title;
+            }
+        }
+
+        return $posts;
     }
 
     public function show(string $slug)
