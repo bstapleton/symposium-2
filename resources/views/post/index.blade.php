@@ -8,4 +8,6 @@
             @include('shared.post-card', ['post' => $post])
         @endforeach
     </ul>
+
+    {{ $posts->links() }}
 @endsection
