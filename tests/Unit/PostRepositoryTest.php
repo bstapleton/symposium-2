@@ -8,6 +8,7 @@ use App\Models\Reply;
 use App\Models\User;
 use App\Repositories\PostRepository;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Str;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
@@ -45,6 +46,7 @@ class PostRepositoryTest extends TestCase
 
         // Assert that we have 3 posts
         $this->assertCount(3, $posts);
+        $this->assertInstanceOf(LengthAwarePaginator::class, $posts);
     }
 
     #[Test]

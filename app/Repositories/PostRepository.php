@@ -9,7 +9,7 @@ class PostRepository implements IEloquentRepository
 {
     public function all()
     {
-        $posts = Post::with('revisions')->paginate(20);
+        $posts = Post::with('revisions')->paginate();
 
         foreach ($posts as $post) {
             $postRevision = $this->getLatestRevision($post);
